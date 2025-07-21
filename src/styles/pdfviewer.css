@@ -1,0 +1,100 @@
+.pdf-viewer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 700px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 14px rgba(0,0,0,0.06);
+  padding: 32px 24px;
+  min-height: 600px;
+  position: relative;
+}
+
+.pdf-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.pdf-controls button {
+  background: #f0f3fa;
+  border: none;
+  border-radius: 5px;
+  font-size: 1.4rem;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  color: #0076ff;
+  transition: background 0.15s;
+}
+.pdf-controls button:hover {
+  background: #e6eaff;
+}
+.pdf-canvas-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  min-height: 500px;
+  overflow: auto;
+  padding: 0;
+}
+
+.devis-html {
+  width: 100%;
+  max-width: 600px;
+  background: #fff;
+  border-radius: 10px;
+  border: 1.5px solid #e6eaff;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.03);
+  padding: 32px 24px 24px 24px;
+  font-family: 'Inter', Arial, sans-serif;
+  color: #232a3d;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.devis-html h2 {
+  color: #0076ff;
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+.devis-section {
+  background: #f6f8fc;
+  border-radius: 7px;
+  padding: 18px 16px;
+  margin-bottom: 12px;
+  font-size: 1.08rem;
+  line-height: 1.7;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+}
+.devis-section strong {
+  color: #0076ff;
+  font-weight: 600;
+}
+.devis-img-mock {
+  width: 100%;
+  min-height: 140px;
+  border-radius: 7px;
+  background: repeating-linear-gradient(135deg, #e6eaff 0 10px, #f6f8fc 10px 20px);
+  margin-top: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #b1b6c6;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 900px) {
+  .pdf-viewer {
+    max-width: 98vw;
+    padding: 10px 1vw;
+  }
+  .devis-html {
+    padding: 18px 6px 12px 6px;
+    font-size: 0.98rem;
+  }
+}

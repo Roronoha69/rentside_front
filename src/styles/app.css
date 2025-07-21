@@ -1,0 +1,15 @@
+.app-layout {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main-content {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f6fa;
+  min-width: 0;
+  overflow: hidden;
+}
