@@ -41,51 +41,42 @@ const defaultFenetre = {
   ville: 'Clermont-Ferrand'
 };
 const defaultGarage = {
-  modele: 'castries',
-  finition: 'ral_7016_dark',
-  largeur: 2500,
-  hauteur: 2125,
-  quantite: 1,
-  motorisation: 'Électrique',
-  nb_telecommandes: 2,
-  photocellules: true,
-  feu_clignotant: true,
-  type_isolation: 'Standard',
-  hublots: 'Sans',
-  portillon: false,
-  serrure_manuelle: false,
-  type_pose: 'Neuf',
-  inclure_pose: 'Oui',
-  depose_ancienne: 'Non',
-  evacuation_dechets: false,
-  nom_entreprise: 'SAS RENTSIDE',
-  prenom: 'Client',
-  email: 'client@example.com',
-  telephone: '04 00 00 00 00',
-  adresse_facturation: '22 allée Alan Turing',
-  code_postal: '63000',
-  ville: 'Clermont-Ferrand',
-  code_partenaire: '',
+  // Informations client par défaut
+  client_code: 'CL01648',
+  client_name: 'Client Test',
+  client_address: '1 rue du Test',
+  client_city: 'Clermont-Ferrand',
+  
+  // Adresse de livraison par défaut
   adresse_livraison_diff: false,
-  adresse_livraison: '',
-  code_postal_livraison: '',
-  ville_livraison: '',
-  commentaires: '',
-  date_livraison: '',
-  urgence: false
+  delivery_address: '',
+  delivery_city: '',
+  
+  // Produit par défaut
+  model: 'lima',
+  finition: 'ral_9010_blanc',
+  width: 2400,
+  height: 2000,
+  
+  // Motorisation par défaut
+  motor_type: 'électrique',
+  remote_count: 2,
+  photocells: true,
+  
+  // Options par défaut
+  windows: 'sans',
+  wicket_door: false,
+  
+  // Installation par défaut
+  installation_included: true,
+  installation_type: 'neuf',
+  old_door_removal: true,
+  
+  // Paiement par défaut
+  payment_method: 'Virement comptant'
 };
 
-export default function PdfViewer({ page, variables, zoom = 1 }) {
-  const [zoomState, setZoom] = useState(zoom);
-  const handleZoomIn = () => setZoom(z => Math.min(z + 0.2, 2));
-  const handleZoomOut = () => setZoom(z => Math.max(z - 0.2, 0.6));
-
-  const zoomStyle = {
-    transform: `scale(${zoomState})`,
-    transformOrigin: 'top left',
-    width: `${100 / zoomState}%`,
-    height: `${100 / zoomState}%`
-  };
+export default function PdfViewer({ page, variables }) {
 
   // Calculs automatiques pour fenêtre
   const calculerDonneesTechniques = (donnees) => {
@@ -126,12 +117,7 @@ export default function PdfViewer({ page, variables, zoom = 1 }) {
 
   return (
     <div className="pdf-viewer">
-      <div className="pdf-controls">
-        <button onClick={handleZoomOut} aria-label="Zoom out">-</button>
-        <span>{Math.round(zoomState * 100)}%</span>
-        <button onClick={handleZoomIn} aria-label="Zoom in">+</button>
-      </div>
-      <div className="pdf-canvas-wrapper" style={{ transform: `scale(${zoomState})` }}>
+      <div className="pdf-canvas-wrapper">
         {page === 'fenetre' && (
           <div className="devis-html fenetre">
             {/* En-tête professionnel enrichi */}

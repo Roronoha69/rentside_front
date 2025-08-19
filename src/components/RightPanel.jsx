@@ -72,53 +72,39 @@ const solQuestions = [
 ];
 
 const garageQuestions = [
-  // 1. Modèle et spécifications
-  { label: 'Modèle de porte', name: 'modele', type: 'select', options: ['ankara', 'castries', 'lima', 'riga'] },
-  { label: 'Finition', name: 'finition', type: 'select', options: ['ral_7016_dark', 'wood_flat', 'ral_9010_blanc'] },
+  // Informations client
+  { label: 'Code client', name: 'client_code', type: 'text', placeholder: 'ex: CL01682' },
+  { label: 'Nom client', name: 'client_name', type: 'text' },
+  { label: 'Adresse client', name: 'client_address', type: 'text' },
+  { label: 'Ville client', name: 'client_city', type: 'text' },
   
-  // 2. Dimensions détaillées
-  { label: 'Largeur (mm)', name: 'largeur', type: 'number' },
-  { label: 'Hauteur (mm)', name: 'hauteur', type: 'number' },
-  { label: 'Quantité', name: 'quantite', type: 'number' },
-  
-  // 3. Motorisation et accessoires
-  { label: 'Motorisation', name: 'motorisation', type: 'select', options: ['Manuelle', 'Électrique'] },
-  { label: 'Nombre de télécommandes', name: 'nb_telecommandes', type: 'number' },
-  { label: 'Photocellules de sécurité', name: 'photocellules', type: 'checkbox' },
-  { label: 'Feu clignotant', name: 'feu_clignotant', type: 'checkbox' },
-  
-  // 4. Options techniques
-  { label: 'Type d’isolation', name: 'type_isolation', type: 'select', options: ['Standard', 'Renforcée', 'Premium'] },
-  { label: 'Hublot(s)', name: 'hublots', type: 'select', options: ['Sans', '1 hublot', '2 hublots', '4 hublots'] },
-  { label: 'Portillon intégré', name: 'portillon', type: 'checkbox' },
-  { label: 'Serrure manuelle', name: 'serrure_manuelle', type: 'checkbox' },
-  
-  // 5. Installation et pose
-  { label: 'Type de pose', name: 'type_pose', type: 'select', options: ['Neuf', 'Rénovation', 'Remplacement'] },
-  { label: 'Inclure la pose', name: 'inclure_pose', type: 'select', options: ['Oui', 'Non'] },
-  { label: 'Dépose ancienne porte', name: 'depose_ancienne', type: 'select', options: ['Oui', 'Non'] },
-  { label: 'Évacuation déchets', name: 'evacuation_dechets', type: 'checkbox' },
-  
-  // 6. Informations client
-  { label: 'Nom (Entreprise)', name: 'nom_entreprise', type: 'text' },
-  { label: 'Prénom', name: 'prenom', type: 'text' },
-  { label: 'Email', name: 'email', type: 'email' },
-  { label: 'Téléphone', name: 'telephone', type: 'text' },
-  { label: 'Adresse de facturation', name: 'adresse_facturation', type: 'textarea' },
-  { label: 'Code postal', name: 'code_postal', type: 'text' },
-  { label: 'Ville', name: 'ville', type: 'text' },
-  { label: 'Code partenaire', name: 'code_partenaire', type: 'text' },
-  
-  // 7. Adresse de livraison
+  // Adresse de livraison
   { label: 'Adresse de livraison différente ?', name: 'adresse_livraison_diff', type: 'checkbox' },
-  { label: 'Adresse de livraison', name: 'adresse_livraison', type: 'textarea' },
-  { label: 'Code postal livraison', name: 'code_postal_livraison', type: 'text' },
-  { label: 'Ville livraison', name: 'ville_livraison', type: 'text' },
+  { label: 'Adresse de livraison', name: 'delivery_address', type: 'text', condition: 'adresse_livraison_diff' },
+  { label: 'Ville de livraison', name: 'delivery_city', type: 'text', condition: 'adresse_livraison_diff' },
   
-  // 8. Informations complémentaires
-  { label: 'Commentaires spéciaux', name: 'commentaires', type: 'textarea' },
-  { label: 'Date de livraison souhaitée', name: 'date_livraison', type: 'date' },
-  { label: 'Urgence', name: 'urgence', type: 'checkbox' }
+  // Produits
+  { label: 'Modèle de porte', name: 'model', type: 'select', options: ['ankara', 'castries', 'lima', 'riga'] },
+  { label: 'Finition', name: 'finition', type: 'select', options: ['ral_7016_dark', 'wood_flat', 'ral_9010_blanc'] },
+  { label: 'Largeur (mm)', name: 'width', type: 'number', placeholder: 'ex: 2400' },
+  { label: 'Hauteur (mm)', name: 'height', type: 'number', placeholder: 'ex: 2000' },
+  
+  // Motorisation
+  { label: 'Type motorisation', name: 'motor_type', type: 'select', options: ['manuelle', 'électrique'] },
+  { label: 'Nombre de télécommandes', name: 'remote_count', type: 'number', condition: 'motor_type === "électrique"' },
+  { label: 'Photocellules', name: 'photocells', type: 'checkbox', condition: 'motor_type === "électrique"' },
+  
+  // Options
+  { label: 'Hublots', name: 'windows', type: 'select', options: ['sans', 'avec'] },
+  { label: 'Portillon intégré', name: 'wicket_door', type: 'checkbox' },
+  
+  // Installation
+  { label: 'Inclure la pose', name: 'installation_included', type: 'checkbox' },
+  { label: 'Type de pose', name: 'installation_type', type: 'select', options: ['neuf', 'rénovation'], condition: 'installation_included' },
+  { label: 'Dépose ancienne porte', name: 'old_door_removal', type: 'checkbox', condition: 'installation_included' },
+  
+  // Paiement
+  { label: 'Mode de règlement', name: 'payment_method', type: 'select', options: ['Virement comptant', 'Chèque', 'CB'] }
 ];
 
 const questionSets = {
@@ -167,38 +153,39 @@ const defaultValues = {
     description_projet: ''
   },
   garage: {
-    modele: 'castries',
-    finition: 'ral_7016_dark',
-    largeur: 2500,
-    hauteur: 2125,
-    quantite: 1,
-    motorisation: 'Électrique',
-    nb_telecommandes: 2,
-    photocellules: true,
-    feu_clignotant: true,
-    type_isolation: 'Standard',
-    hublots: 'Sans',
-    portillon: false,
-    serrure_manuelle: false,
-    type_pose: 'Neuf',
-    inclure_pose: 'Oui',
-    depose_ancienne: 'Non',
-    evacuation_dechets: false,
-    nom_entreprise: 'SAS RENTSIDE',
-    prenom: 'Client',
-    email: 'client@example.com',
-    telephone: '04 00 00 00 00',
-    adresse_facturation: '22 allée Alan Turing',
-    code_postal: '63000',
-    ville: 'Clermont-Ferrand',
-    code_partenaire: '',
+    // Informations client par défaut
+    client_code: '',
+    client_name: '',
+    client_address: '',
+    client_city: '',
+    
+    // Adresse de livraison par défaut
     adresse_livraison_diff: false,
-    adresse_livraison: '',
-    code_postal_livraison: '',
-    ville_livraison: '',
-    commentaires: '',
-    date_livraison: '',
-    urgence: false
+    delivery_address: '',
+    delivery_city: '',
+    
+    // Produit par défaut
+    model: 'lima',
+    finition: 'ral_9010_blanc',
+    width: 2400,
+    height: 2000,
+    
+    // Motorisation par défaut
+    motor_type: 'électrique',
+    remote_count: 2,
+    photocells: true,
+    
+    // Options par défaut
+    windows: 'sans',
+    wicket_door: false,
+    
+    // Installation par défaut
+    installation_included: true,
+    installation_type: 'neuf',
+    old_door_removal: true,
+    
+    // Paiement par défaut
+    payment_method: 'Virement comptant'
   },
   sol: {}
 };
