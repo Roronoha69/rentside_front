@@ -1,14 +1,14 @@
 .pdf-viewer {
   display: flex;
   flex-direction: column;
-  align-items: center;
   width: 100%;
-  max-width: 700px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 14px rgba(0,0,0,0.06);
-  padding: 32px 24px;
-  min-height: 600px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  height: 90vh;
   position: relative;
 }
 
@@ -33,13 +33,15 @@
   background: #e6eaff;
 }
 .pdf-canvas-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  transform-origin: top left;
+  transition: transform 0.2s ease;
+  background: white;
   width: 100%;
-  min-height: 500px;
-  overflow: auto;
-  padding: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .devis-html {
@@ -49,12 +51,14 @@
   border-radius: 10px;
   border: 1.5px solid #e6eaff;
   box-shadow: 0 1px 8px rgba(0,0,0,0.03);
-  padding: 32px 24px 24px 24px;
-  font-family: 'Inter', Arial, sans-serif;
-  color: #232a3d;
+  padding: 0;
+  font-family: 'Arial', sans-serif;
+  line-height: 1.4;
+  color: #333;
   display: flex;
   flex-direction: column;
   gap: 18px;
+  min-height: auto;
 }
 .devis-html h2 {
   color: #0076ff;
@@ -88,6 +92,357 @@
   font-size: 1.1rem;
 }
 
+/* Styles pour le nouveau design professionnel */
+.devis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px 0;
+  border-bottom: 2px solid #e6eaff;
+  margin-bottom: 20px;
+}
+
+.logo-section {
+  flex: 1;
+}
+
+.devis-logo {
+  height: 60px;
+  width: auto;
+}
+
+.header-info {
+  flex: 1;
+  text-align: right;
+}
+
+.confirmation-info {
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.client-info-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 25px;
+  padding: 20px 0;
+  border-bottom: 1px solid #e6eaff;
+}
+
+.client-info h3, .delivery-info h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #232a3d;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+.info-block {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #444;
+}
+
+.technical-section {
+  margin: 25px 0;
+}
+
+.position-header {
+  background: #f0f3fa;
+  padding: 12px 15px;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+  border: 1px solid #d0d7e8;
+}
+
+.technical-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+}
+
+.window-views {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.view-section h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #232a3d;
+  margin-bottom: 10px;
+}
+
+.window-diagram {
+  border: 2px solid #333;
+  padding: 15px;
+  background: #fafafa;
+  border-radius: 5px;
+  position: relative;
+}
+
+.window-frame {
+  position: relative;
+  border: 3px solid #666;
+  background: #fff;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.window-dimensions {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: #fafafa;
+  padding: 2px 8px;
+}
+
+.window-height {
+  position: absolute;
+  right: -35px;
+  top: 50%;
+  transform: translateY(-50%) rotate(90deg);
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: #fafafa;
+  padding: 2px 8px;
+}
+
+.window-panels {
+  display: flex;
+  width: 100%;
+  height: 80px;
+}
+
+.panel {
+  flex: 1;
+  border: 1px solid #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  background: linear-gradient(135deg, #e8f4fd 0%, #b6e5ff 100%);
+  margin: 2px;
+}
+
+.specifications {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.spec-table h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #232a3d;
+  margin-bottom: 8px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid #ddd;
+}
+
+.spec-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin-bottom: 15px;
+}
+
+.spec-table table td {
+  padding: 3px 8px;
+  border-bottom: 1px solid #eee;
+  vertical-align: top;
+}
+
+.spec-table table td:first-child {
+  color: #666;
+  width: 60%;
+}
+
+.spec-table table td:last-child {
+  font-weight: 500;
+  color: #333;
+}
+
+.opening-details h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #0076ff;
+  margin-bottom: 10px;
+  background: #f0f8ff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border-left: 3px solid #0076ff;
+}
+
+.opening-details ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.opening-details li {
+  font-size: 0.85rem;
+  padding: 2px 0;
+  color: #555;
+  line-height: 1.4;
+}
+
+.price-section {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 2px solid #e6eaff;
+}
+
+.price-box {
+  background: #f8f9fc;
+  border: 1px solid #d0d7e8;
+  border-radius: 5px;
+  padding: 15px;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.price-box strong {
+  color: #0076ff;
+}
+
+/* Styles pour le scroll et la hauteur */
+.devis-html.fenetre {
+  max-height: none;
+  overflow: visible;
+}
+
+/* Styles pour les nouvelles sections professionnelles */
+.commercial-contact {
+  background: #f0f8ff;
+  border: 1px solid #b3d9ff;
+  border-radius: 5px;
+  padding: 10px 15px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+.contact-info {
+  color: #0066cc;
+  line-height: 1.5;
+}
+
+.accessories-section {
+  margin: 20px 0;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 5px;
+  border-left: 4px solid #28a745;
+}
+
+.accessories-section h4 {
+  color: #28a745;
+  font-size: 1rem;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.summary-section {
+  margin-top: 30px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fc 0%, #e6eaff 100%);
+  border-radius: 8px;
+  border: 2px solid #d0d7e8;
+}
+
+.summary-section h4 {
+  color: #0076ff;
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  text-align: center;
+  font-weight: 700;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: white;
+  border-radius: 4px;
+  border: 1px solid #e0e0e0;
+  font-size: 0.9rem;
+}
+
+.summary-item strong {
+  color: #333;
+}
+
+.summary-total {
+  text-align: center;
+  padding: 15px;
+  background: #0076ff;
+  color: white;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-top: 15px;
+}
+
+.conditions-section {
+  margin-top: 25px;
+  padding: 15px;
+  background: #fff8e1;
+  border: 1px solid #ffcc02;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.conditions-section h5 {
+  color: #f57c00;
+  font-size: 0.9rem;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.performance-badge {
+  display: inline-block;
+  background: #4caf50;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-left: 5px;
+}
+
+.technical-highlight {
+  background: #e3f2fd;
+  border-left: 3px solid #2196f3;
+  padding: 10px 15px;
+  margin: 10px 0;
+  border-radius: 0 4px 4px 0;
+}
+
+.technical-highlight strong {
+  color: #1976d2;
+}
+
 @media (max-width: 900px) {
   .pdf-viewer {
     max-width: 98vw;
@@ -96,5 +451,309 @@
   .devis-html {
     padding: 18px 6px 12px 6px;
     font-size: 0.98rem;
+  }
+  
+  .client-info-section {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .technical-content {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .position-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .devis-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .header-info {
+    text-align: left;
+  }
+  
+  .summary-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .commercial-contact {
+    font-size: 0.8rem;
+    padding: 8px 12px;
+  }
+  
+  .accessories-section {
+    padding: 12px;
+  }
+  
+  .summary-section {
+    padding: 15px;
+  }
+  
+  /* Responsive spécifique garage */
+  .garage-diagram {
+    width: 100%;
+    max-width: 250px;
+    height: 180px;
+  }
+  
+  .devis-html.garage .summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== STYLES FACTURE PORTE DE GARAGE ===== */
+
+/* En-tête entreprise */
+.garage-invoice .invoice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.garage-invoice .company-info {
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.garage-invoice .company-logo {
+  width: 120px;
+  height: auto;
+}
+
+/* Section adresses */
+.garage-invoice .addresses-section {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.garage-invoice .billing-address,
+.garage-invoice .delivery-info {
+  width: 48%;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+/* Boîte informations devis */
+.garage-invoice .quote-info-box {
+  border: 2px solid #333;
+  margin: 20px 0;
+  width: 300px;
+  margin-left: auto;
+}
+
+.garage-invoice .quote-header {
+  background: #333;
+  color: white;
+  padding: 8px 15px;
+  text-align: center;
+  font-size: 1.1rem;
+}
+
+.garage-invoice .quote-details {
+  padding: 10px 15px;
+  background: white;
+}
+
+.garage-invoice .quote-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  font-size: 0.9rem;
+}
+
+.garage-invoice .quote-subheader {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin: 10px 0 5px 0;
+  font-size: 0.8rem;
+  font-weight: bold;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+}
+
+.garage-invoice .quote-subrow {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  font-size: 0.8rem;
+  margin-bottom: 10px;
+}
+
+.garage-invoice .tva-row {
+  font-size: 0.8rem;
+  margin-top: 10px;
+}
+
+/* Tableau des produits */
+.garage-invoice .products-table {
+  margin: 20px 0;
+}
+
+.garage-invoice .products-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.garage-invoice .products-table th {
+  background: #f8f9fa;
+  border: 1px solid #333;
+  padding: 8px 6px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 0.75rem;
+}
+
+.garage-invoice .products-table td {
+  border: 1px solid #333;
+  padding: 8px 6px;
+  vertical-align: top;
+  text-align: center;
+}
+
+.garage-invoice .products-table td:nth-child(2) {
+  text-align: left;
+  width: 40%;
+}
+
+.garage-invoice .products-table td:nth-child(1) {
+  width: 12%;
+}
+
+.garage-invoice .products-table td:nth-child(3),
+.garage-invoice .products-table td:nth-child(4),
+.garage-invoice .products-table td:nth-child(5),
+.garage-invoice .products-table td:nth-child(6),
+.garage-invoice .products-table td:nth-child(7) {
+  width: 12%;
+}
+
+/* Note facture */
+.garage-invoice .invoice-note {
+  font-size: 0.75rem;
+  margin: 15px 0;
+  line-height: 1.3;
+  color: #666;
+}
+
+/* Section totaux */
+.garage-invoice .totals-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin: 20px 0;
+}
+
+.garage-invoice .totals-table {
+  width: 200px;
+}
+
+.garage-invoice .total-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  padding: 5px 0;
+  font-size: 0.8rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.garage-invoice .total-row:first-child {
+  font-weight: bold;
+  background: #f8f9fa;
+  padding: 8px 0;
+}
+
+.garage-invoice .final-totals {
+  width: 250px;
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  padding: 15px;
+}
+
+.garage-invoice .total-line {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.garage-invoice .total-line.final {
+  border-top: 2px solid #333;
+  padding-top: 10px;
+  margin-top: 10px;
+  font-size: 1.1rem;
+}
+
+/* Coordonnées bancaires */
+.garage-invoice .bank-details {
+  margin: 20px 0;
+  font-size: 0.8rem;
+  line-height: 1.4;
+  background: #f8f9fa;
+  padding: 15px;
+  border-left: 4px solid #007bff;
+}
+
+/* Pied de page */
+.garage-invoice .invoice-footer {
+  margin-top: 30px;
+  font-size: 0.7rem;
+  color: #666;
+  line-height: 1.3;
+  border-top: 1px solid #ddd;
+  padding-top: 15px;
+}
+
+/* Responsive pour facture garage */
+@media (max-width: 768px) {
+  .garage-invoice .invoice-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .garage-invoice .addresses-section {
+    flex-direction: column;
+  }
+  
+  .garage-invoice .billing-address,
+  .garage-invoice .delivery-info {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+  
+  .garage-invoice .quote-info-box {
+    width: 100%;
+    margin-left: 0;
+  }
+  
+  .garage-invoice .totals-section {
+    flex-direction: column;
+  }
+  
+  .garage-invoice .totals-table,
+  .garage-invoice .final-totals {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+  
+  .garage-invoice .products-table {
+    overflow-x: auto;
+  }
+  
+  .garage-invoice .products-table table {
+    min-width: 600px;
   }
 }
