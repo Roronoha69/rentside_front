@@ -73,38 +73,55 @@ const solQuestions = [
 
 const garageQuestions = [
   // Informations client
-  { label: 'Code client', name: 'client_code', type: 'text', placeholder: 'ex: CL01682' },
-  { label: 'Nom client', name: 'client_name', type: 'text' },
-  { label: 'Adresse client', name: 'client_address', type: 'text' },
-  { label: 'Ville client', name: 'client_city', type: 'text' },
-  
+  { label: 'Code client', name: 'client_code', type: 'text', placeholder: 'ex: CL01682', required: true },
+  { label: 'Nom client', name: 'client_name', type: 'text', required: true },
+  { label: 'Adresse client', name: 'client_address', type: 'text', required: true },
+  { label: 'Ville client', name: 'client_city', type: 'text', required: true },
+
   // Adresse de livraison
   { label: 'Adresse de livraison différente ?', name: 'adresse_livraison_diff', type: 'checkbox' },
-  { label: 'Adresse de livraison', name: 'delivery_address', type: 'text', condition: 'adresse_livraison_diff' },
-  { label: 'Ville de livraison', name: 'delivery_city', type: 'text', condition: 'adresse_livraison_diff' },
+  { label: 'Adresse de livraison', name: 'delivery_address', type: 'text', condition: 'adresse_livraison_diff', required: true },
+  { label: 'Ville de livraison', name: 'delivery_city', type: 'text', condition: 'adresse_livraison_diff', required: true },
+
+  // Spécifications techniques
+  { label: 'Modèle', name: 'technical_specs.model', type: 'select', options: ['ankara', 'castries', 'lima', 'riga'], required: true },
+  { label: 'Finition', name: 'technical_specs.finish', type: 'select', options: ['ral_7016_dark', 'wood_flat', 'ral_9010_blanc'], required: true },
   
-  // Produits
-  { label: 'Modèle de porte', name: 'model', type: 'select', options: ['ankara', 'castries', 'lima', 'riga'] },
-  { label: 'Finition', name: 'finition', type: 'select', options: ['ral_7016_dark', 'wood_flat', 'ral_9010_blanc'] },
-  { label: 'Largeur (mm)', name: 'width', type: 'number', placeholder: 'ex: 2400' },
-  { label: 'Hauteur (mm)', name: 'height', type: 'number', placeholder: 'ex: 2000' },
+  // Dimensions
+  { label: 'Largeur (mm)', name: 'technical_specs.dimensions.width', type: 'number', placeholder: 'ex: 2400', required: true },
+  { label: 'Hauteur (mm)', name: 'technical_specs.dimensions.height', type: 'number', placeholder: 'ex: 2000', required: true },
+  { label: 'Hauteur linteau (mm)', name: 'technical_specs.dimensions.lintel_height', type: 'number', placeholder: 'ex: 200', required: true },
+
+  // Motorisation et accessoires
+  { label: 'Type motorisation', name: 'technical_specs.motorization.type', type: 'select', options: ['manuelle', 'electrique'], required: true },
   
-  // Motorisation
-  { label: 'Type motorisation', name: 'motor_type', type: 'select', options: ['manuelle', 'électrique'] },
-  { label: 'Nombre de télécommandes', name: 'remote_count', type: 'number', condition: 'motor_type === "électrique"' },
-  { label: 'Photocellules', name: 'photocells', type: 'checkbox', condition: 'motor_type === "électrique"' },
-  
-  // Options
-  { label: 'Hublots', name: 'windows', type: 'select', options: ['sans', 'avec'] },
-  { label: 'Portillon intégré', name: 'wicket_door', type: 'checkbox' },
-  
-  // Installation
+  // Accessoires motorisation électrique
+  { 
+    label: 'Accessoires', 
+    name: 'technical_specs.motorization.accessories', 
+    type: 'checkbox-group',
+    condition: 'technical_specs.motorization.type === "electrique"',
+    options: ['telecommande', 'photocellule', 'clavier_code', 'bouton_poussoir']
+  },
+
+  // Accessoires motorisation manuelle
+  { 
+    label: 'Accessoires', 
+    name: 'technical_specs.motorization.accessories', 
+    type: 'checkbox-group',
+    condition: 'technical_specs.motorization.type === "manuelle"',
+    options: ['serrure', 'poignee']
+  },
+
+  // Options d'installation
   { label: 'Inclure la pose', name: 'installation_included', type: 'checkbox' },
   { label: 'Type de pose', name: 'installation_type', type: 'select', options: ['neuf', 'rénovation'], condition: 'installation_included' },
   { label: 'Dépose ancienne porte', name: 'old_door_removal', type: 'checkbox', condition: 'installation_included' },
-  
-  // Paiement
-  { label: 'Mode de règlement', name: 'payment_method', type: 'select', options: ['Virement comptant', 'Chèque', 'CB'] }
+
+  // Informations de paiement
+  { label: 'Mode de règlement', name: 'payment_method', type: 'select', options: ['Virement comptant', 'Chèque', 'CB'], required: true },
+  { label: 'N° TVA Intracom', name: 'tva_number', type: 'text', placeholder: 'ex: FR03913086799' },
+  { label: 'Taux TVA (%)', name: 'tva_rate', type: 'number', value: 20, required: true }
 ];
 
 const questionSets = {
@@ -164,20 +181,20 @@ const defaultValues = {
     delivery_address: '',
     delivery_city: '',
     
-    // Produit par défaut
-    model: 'lima',
-    finition: 'ral_9010_blanc',
-    width: 2400,
-    height: 2000,
-    
-    // Motorisation par défaut
-    motor_type: 'électrique',
-    remote_count: 2,
-    photocells: true,
-    
-    // Options par défaut
-    windows: 'sans',
-    wicket_door: false,
+    // Spécifications techniques par défaut
+    technical_specs: {
+      model: 'lima',
+      finish: 'ral_9010_blanc',
+      dimensions: {
+        width: 2400,
+        height: 2000,
+        lintel_height: 200
+      },
+      motorization: {
+        type: 'electrique',
+        accessories: ['telecommande', 'photocellule']
+      }
+    },
     
     // Installation par défaut
     installation_included: true,
@@ -185,7 +202,9 @@ const defaultValues = {
     old_door_removal: true,
     
     // Paiement par défaut
-    payment_method: 'Virement comptant'
+    payment_method: 'Virement comptant',
+    tva_number: 'FR03913086799',
+    tva_rate: 20
   },
   sol: {}
 };
@@ -193,6 +212,11 @@ const defaultValues = {
 export default function RightPanel({ page, onVariablesChange }) {
   const questions = questionSets[page] || [];
   const [form, setForm] = useState(defaultValues[page] || {});
+
+  // Réinitialise les valeurs par défaut lorsqu'on change de type de devis
+  React.useEffect(() => {
+    setForm(defaultValues[page] || {});
+  }, [page]);
 
   // Met à jour l'aperçu central à chaque modification
   React.useEffect(() => {
@@ -202,12 +226,30 @@ export default function RightPanel({ page, onVariablesChange }) {
 
   const handleChange = e => {
     const { name, value, type, checked } = e.target;
-    setForm(f => ({ 
-      ...f, 
-      [name]: type === 'number' ? Number(value) 
-            : type === 'checkbox' ? checked 
-            : value 
-    }));
+    // Gère les chemins imbriqués (ex: technical_specs.dimensions.width)
+    const setNestedValue = (obj, path, val) => {
+      const parts = path.split('.');
+      const last = parts.pop();
+      const target = parts.reduce((obj, key) => {
+        obj[key] = obj[key] || {};
+        return obj[key];
+      }, obj);
+      target[last] = val;
+      return obj;
+    };
+
+    setForm(f => {
+      const newForm = { ...f };
+      const finalValue = type === 'number' ? Number(value)
+                      : type === 'checkbox' ? checked
+                      : value;
+      
+      if (name.includes('.')) {
+        return setNestedValue(newForm, name, finalValue);
+      }
+      
+      return { ...newForm, [name]: finalValue };
+    });
   };
 
   // Génère le PDF à partir de l'aperçu central
@@ -230,12 +272,23 @@ export default function RightPanel({ page, onVariablesChange }) {
   return (
     <aside className="right-panel">
       <form className="panel-form" onSubmit={e => e.preventDefault()}>
-        <h2>Modifier le devis</h2>
-        {questions.map(q => (
+        <h2>{page === 'garage' ? 'Devis Porte de garage' : page === 'fenetre' ? 'Devis Fenêtre' : 'Devis Sol'}</h2>
+        {questions.filter(q => {
+          if (!q.condition) return true;
+          const [path, value] = q.condition.split(' === ');
+          const actualValue = path.split('.').reduce((obj, key) => obj?.[key], form);
+          return actualValue === value?.replace(/["']/g, '');
+        }).map(q => (
           <div className="form-group" key={q.name}>
             <label htmlFor={q.name}>{q.label}</label>
             {q.type === 'select' ? (
-              <select id={q.name} name={q.name} value={form[q.name] || ''} onChange={handleChange}>
+              <select 
+                id={q.name} 
+                name={q.name} 
+                value={form[q.name] || ''} 
+                onChange={handleChange}
+                required={q.required}
+              >
                 {q.options.map(opt => (
                   <option key={opt} value={opt}>{opt}</option>
                 ))}
@@ -248,6 +301,7 @@ export default function RightPanel({ page, onVariablesChange }) {
                 onChange={handleChange}
                 rows={3}
                 placeholder={q.placeholder || ''}
+                required={q.required}
               />
             ) : q.type === 'checkbox' ? (
               <div className="checkbox-wrapper">
@@ -256,9 +310,35 @@ export default function RightPanel({ page, onVariablesChange }) {
                   name={q.name} 
                   type="checkbox" 
                   checked={form[q.name] || false} 
-                  onChange={handleChange} 
+                  onChange={handleChange}
+                  required={q.required}
                 />
                 <span className="checkmark"></span>
+              </div>
+            ) : q.type === 'checkbox-group' ? (
+              <div className="checkbox-group">
+                {q.options.map(opt => (
+                  <div key={opt} className="checkbox-item">
+                    <input
+                      type="checkbox"
+                      id={`${q.name}.${opt}`}
+                      name={q.name}
+                      value={opt}
+                      checked={(form[q.name] || []).includes(opt)}
+                      onChange={(e) => {
+                        const current = form[q.name] || [];
+                        const value = e.target.value;
+                        setForm(f => ({
+                          ...f,
+                          [q.name]: e.target.checked
+                            ? [...current, value]
+                            : current.filter(v => v !== value)
+                        }));
+                      }}
+                    />
+                    <label htmlFor={`${q.name}.${opt}`}>{opt}</label>
+                  </div>
+                ))}
               </div>
             ) : (
               <input 
@@ -268,6 +348,7 @@ export default function RightPanel({ page, onVariablesChange }) {
                 value={form[q.name] || ''} 
                 onChange={handleChange}
                 placeholder={q.placeholder || ''}
+                required={q.required}
               />
             )}
           </div>

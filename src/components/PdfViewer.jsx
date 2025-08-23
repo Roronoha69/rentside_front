@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { saveGarageQuotePDF } from '../services/api';
+import { toast } from 'react-toastify';
 import '../styles/pdfviewer.css';
 import logo from '../assets/rentside.png';
 import {
@@ -77,6 +79,22 @@ const defaultGarage = {
 };
 
 export default function PdfViewer({ page, variables }) {
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSavePDF = async () => {
+    if (page !== 'garage') return;
+    
+    setIsSaving(true);
+    try {
+      await saveGarageQuotePDF(variables);
+      toast.success('Devis sauvegardé en PDF avec succès');
+    } catch (error) {
+      toast.error('Erreur lors de la sauvegarde du PDF');
+      console.error(error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   // Calculs automatiques pour fenêtre
   const calculerDonneesTechniques = (donnees) => {
@@ -108,16 +126,244 @@ export default function PdfViewer({ page, variables }) {
   };
 
   const donneesTech = page === 'fenetre' ? calculerDonneesTechniques({ ...defaultFenetre, ...(variables||{}) }) : {};
-  const donneesTechGarage = page === 'garage' ? calculerDonneesTechniquesGarage({ ...defaultGarage, ...(variables||{}) }) : {};
+  // Normalisation des données pour GARAGE: mappe les nouveaux noms vers ceux utilisés dans le template
+  const mappedGarage = page === 'garage' ? (() => {
+    const v = { ...(variables || {}) };
+    return {
+      // anciens alias conservés pour compatibilité
+      ...defaultGarage,
+      ...v,
+      // mapping produit
+      modele: v.model ?? defaultGarage.model,
+      largeur: v.width ?? defaultGarage.width,
+      hauteur: v.height ?? defaultGarage.height,
+      // motorisation et accessoires
+      motorisation: v.motor_type ? (v.motor_type.toLowerCase().includes('élect') ? 'Électrique' : 'Manuelle') : undefined,
+      nb_telecommandes: v.remote_count ?? defaultGarage.remote_count,
+      photocellules: v.photocells ?? defaultGarage.photocells,
+      // options
+      hublots: v.windows ?? defaultGarage.windows,
+      portillon: v.wicket_door ?? defaultGarage.wicket_door,
+      // installation
+      inclure_pose: typeof v.installation_included === 'boolean' ? (v.installation_included ? 'Oui' : 'Non') : undefined,
+      type_pose: v.installation_type ?? defaultGarage.installation_type,
+      depose_ancienne: typeof v.old_door_removal === 'boolean' ? (v.old_door_removal ? 'Oui' : 'Non') : undefined,
+      // adresse livraison
+      adresse_livraison_diff: v.adresse_livraison_diff ?? defaultGarage.adresse_livraison_diff,
+      adresse_livraison: v.delivery_address ?? '',
+      ville_livraison: v.delivery_city ?? '',
+      // identité client (affichage classique à droite dans l'entête info client)
+      nom_entreprise: v.client_name ?? '',
+      adresse_facturation: v.client_address ?? '',
+      ville: v.client_city ?? '',
+      code_client: v.client_code ?? '',
+      // paiements
+      mode_reglement: v.payment_method ?? defaultGarage.payment_method,
+      // facture
+      invoice_number: v.invoice_number ?? '',
+      invoice_date: v.invoice_date ?? '',
+      tva_intracom: v.tva_intracom ?? '',
+      // lignes produits
+      product_code: v.product_code ?? 'PORTEGARA',
+      product_qty: typeof v.product_qty === 'number' ? v.product_qty : 1,
+      product_unit_price: typeof v.product_unit_price === 'number' ? v.product_unit_price : 520,
+      motor_code: v.motor_code ?? 'MOTEURBM2',
+      motor_qty: typeof v.motor_qty === 'number' ? v.motor_qty : 1,
+      motor_unit_price: typeof v.motor_unit_price === 'number' ? v.motor_unit_price : 139.99,
+      // tva
+      tva_rate: typeof v.tva_rate === 'number' ? v.tva_rate : 20,
+    };
+  })() : {};
 
-  // Mock: utilise les variables par défaut si non fournies
-  const data = page === 'fenetre' ? { ...defaultFenetre, ...(variables||{}) }
-    : page === 'garage' ? { ...defaultGarage, ...(variables||{}) }
+  const donneesTechGarage = page === 'garage' ? calculerDonneesTechniquesGarage(mappedGarage) : {};
+
+  const data = page === 'fenetre'
+    ? { ...defaultFenetre, ...(variables||{}) }
+    : page === 'garage' ? mappedGarage
     : {};
+
+  // Utilitaires d'affichage monétaire et calculs de lignes
+  const fmt = (n) => new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(Number(n || 0));
+  const tvaRate = page === 'garage' ? (Number(data.tva_rate ?? 20) / 100) : 0.2;
+  const line1Qty = Number(data.product_qty || 0);
+  const line1PU = Number(data.product_unit_price || 0);
+  const line1HT = line1Qty * line1PU;
+  const line2Qty = Number(data.motor_qty || 0);
+  const line2PU = Number(data.motor_unit_price || 0);
+  const line2HT = line2Qty * line2PU;
+  const poseHT = (data.inclure_pose === 'Oui') ? 350 : 0;
+  const baseHT = (page === 'garage') ? (line1HT + line2HT + poseHT) : 0;
+  const tvaAmt = baseHT * tvaRate;
+  const totalTTC = baseHT + tvaAmt;
 
   return (
     <div className="pdf-viewer">
+      <div className="pdf-actions">
+       {/*   <button 
+          onClick={handleSavePDF} 
+          disabled={isSaving || page !== 'garage'}
+          className="save-pdf-btn"
+        >
+         {isSaving ? 'Sauvegarde...' : 'Sauvegarder en PDF'}
+        </button> */}
+      </div>
       <div className="pdf-canvas-wrapper">
+        {page === 'garage' && (
+          <div className="devis-html garage-invoice">
+            {/* En-tête */}
+            <div className="devis-header">
+              <div className="company-info">
+                <strong>SAS RENTSIDE</strong><br/>
+                22 allée Alan Turing<br/>
+                63000 CLERMONT-FERRAND<br/>
+                Tél : 04.15.81.18.34<br/>
+                Tél portable : 06.32.98.61.07<br/>
+                Site web : www.rentside.fr<br/>
+                Email : info.rentside@gmail.com
+              </div>
+              <div className="logo-section">
+                <img src={logo} alt="Rentside" className="devis-logo" />
+              </div>
+            </div>
+
+            {/* Informations client */}
+            <div className="client-info-section">
+              <div className="addresses">
+                <div className="delivery-address">
+                  <strong>Adresse Livraison</strong><br/>
+                  {data.delivery_address}<br/>
+                  {data.delivery_city}
+                </div>
+                <div className="client-info">
+                  <strong>{data.client_name}</strong><br/>
+                  {data.client_address}<br/>
+                  {data.client_city}
+                </div>
+              </div>
+
+              {/* Facture header */}
+              <div className="facture-header">
+                <table>
+                  <tbody>
+                    <tr>
+                      <td><strong>Facture</strong></td>
+                      <td>
+                        <strong>Numéro : {data.invoice_number}</strong><br/>
+                        Code client : {data.client_code}<br/>
+                        Mode de règlement : Virement comptant
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Date : {new Date().toLocaleDateString('fr-FR')}</td>
+                      <td>N° de TVA (acheteur) : {data.tva_number}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Tableau produits */}
+            <div className="products-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>Description</th>
+                    <th>Qté</th>
+                    <th>P.U. HT</th>
+                    <th>Montant HT</th>
+                    <th>TVA</th>
+                    <th>Montant TTC</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>PORTEGARA</td>
+                    <td>
+                      PORTE DE GARAGE LISSE<br/>
+                      MODELE : {data.model?.toUpperCase()}<br/>
+                      RAL : {data.finition}<br/>
+                      {data.width}x{data.height}mm
+                    </td>
+                    <td>1</td>
+                    <td>{fmt(520.00)}</td>
+                    <td>{fmt(520.00)}</td>
+                    <td>{fmt(104.00)}</td>
+                    <td>{fmt(624.00)}</td>
+                  </tr>
+                  {data.motor_type === 'électrique' && (
+                    <tr>
+                      <td>MOTEURMX2</td>
+                      <td>
+                        MOTEUR + COULISSES AVEC 2 TELECOMMANDES
+                      </td>
+                      <td>1</td>
+                      <td>{fmt(139.99)}</td>
+                      <td>{fmt(139.99)}</td>
+                      <td>{fmt(28.00)}</td>
+                      <td>{fmt(167.99)}</td>
+                    </tr>
+                  )}
+                  {data.inclure_pose === 'Oui' && (
+                    <tr>
+                      <td>POSE</td>
+                      <td>
+                        INSTALLATION ET POSE DE LA PORTE DE GARAGE
+                      </td>
+                      <td>1</td>
+                      <td>{fmt(350)}</td>
+                      <td>{fmt(350)}</td>
+                      <td>{fmt(70)}</td>
+                      <td>{fmt(420)}</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Totaux */}
+            <div className="totals-section">
+              <table className="totals-table">
+                <tbody>
+                  <tr>
+                    <td>Total HT</td>
+                    <td>{fmt(659.99)}</td>
+                  </tr>
+                  <tr>
+                    <td>Total TVA</td>
+                    <td>{fmt(132.00)}</td>
+                  </tr>
+                  <tr>
+                    <td>Total TTC</td>
+                    <td>{fmt(791.99)}</td>
+                  </tr>
+                  <tr>
+                    <td>Net à payer</td>
+                    <td>{fmt(791.99)}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* Coordonnées bancaires */}
+            <div className="bank-info">
+              <strong>Coordonnées bancaires société :</strong><br/>
+              Banque : CREDIT AGRICOLE<br/>
+              RIB : 16806000156411982677926<br/>
+              IBAN : FR7616806000156411982677926<br/>
+              BIC : AGRIFRPP868
+            </div>
+
+            {/* Mentions légales */}
+            <div className="legal-info">
+              <p>
+                SAS RENTSIDE - SIRET : 913 086 799 00019 - APE : 4673A - TVA Intracommunautaire : FR03913086799 - Capital : 1 000,00 €<br/>
+                En cas de retard de paiement, une pénalité égale à 3 fois le taux d'intérêt légal sera exigible (Décret 2009-138 du 9 février 2009)<br/>
+                Pour les professionnels, une indemnité minimum forfaitaire de 40€ pour frais de recouvrement sera exigible (Articles L441-6 et D441-5 du Code de commerce)
+              </p>
+            </div>
+          </div>
+        )}
         {page === 'fenetre' && (
           <div className="devis-html fenetre">
             {/* En-tête professionnel enrichi */}
@@ -409,19 +655,6 @@ export default function PdfViewer({ page, variables }) {
               </div>
               <div style={{marginTop: '10px', fontSize: '0.75rem', color: '#666'}}>
                 Devis valable jusqu'au <strong>{donneesTech.dateExpiration}</strong> - Conditions générales Rentside applicables
-              </div>
-            </div>
-          </div>
-        )}
-        {page === 'garage' && (
-          <div className="devis-html garage-invoice">
-            {/* En-tête entreprise */}
-            <div className="invoice-header">
-              <div className="company-info">
-                <strong>SAS RENTSIDE</strong><br/>
-                22 allée Alan Turing<br/>
-                63000 CLERMONT-FERRAND<br/>
-                Tél : 04.15.81.18.34<br/>
                 Tél portable : 06.32.95.81.07<br/>
                 Site web : www.rentside.fr<br/>
                 Email : info.rentside@gmail.com
@@ -454,19 +687,19 @@ export default function PdfViewer({ page, variables }) {
               </div>
             </div>
 
-            {/* Informations devis */}
+            {/* Informations facture */}
             <div className="quote-info-box">
               <div className="quote-header">
-                <strong>Devis</strong>
+                <strong>Facture</strong>
               </div>
               <div className="quote-details">
                 <div className="quote-row">
                   <span>Date :</span>
-                  <span>{new Date().toLocaleDateString('fr-FR')}</span>
+                  <span>{data.invoice_date ? new Date(data.invoice_date).toLocaleDateString('fr-FR') : new Date().toLocaleDateString('fr-FR')}</span>
                 </div>
                 <div className="quote-row">
                   <span>Numéro</span>
-                  <span>DE600689</span>
+                  <span>{data.invoice_number || ''}</span>
                 </div>
                 <div className="quote-subheader">
                   <div>Code client</div>
@@ -474,12 +707,12 @@ export default function PdfViewer({ page, variables }) {
                   <div>Mode de règlement</div>
                 </div>
                 <div className="quote-subrow">
-                  <div>CL01648</div>
+                  <div>{data.code_client || ''}</div>
                   <div>{donneesTechGarage.dateExpiration}</div>
-                  <div></div>
+                  <div>{data.mode_reglement || ''}</div>
                 </div>
                 <div className="tva-row">
-                  <span>N° de TVA Intracom :</span>
+                  <span>N° de TVA Intracom : {data.tva_intracom || ''}</span>
                 </div>
               </div>
             </div>
@@ -500,22 +733,37 @@ export default function PdfViewer({ page, variables }) {
                 </thead>
                 <tbody>
                   <tr>
-                    <td>PORTE{data.modele?.toUpperCase()}</td>
+                    <td>{data.product_code}</td>
                     <td>
-                      <strong>PORTE DE GARAGE SECTIONNELLE {data.modele?.toUpperCase()}</strong><br/>
-                      Finition: {donneesTechGarage.finitionDescription}<br/>
-                      Dimensions: {data.largeur} x {data.hauteur} mm<br/>
-                      {data.motorisation === 'Électrique' && 'Motorisation électrique incluse'}<br/>
-                      {data.photocellules && 'Photocellules de sécurité'}<br/>
-                      {data.feu_clignotant && 'Feu clignotant'}<br/>
-                      {data.nb_telecommandes > 0 && `${data.nb_telecommandes} télécommandes`}
+                      <strong>PORTE DE GARAGE SECTIONNELLE {data.model?.toUpperCase()}</strong><br/>
+                      Finition: {data.finition}<br/>
+                      Dimensions: {data.width} x {data.height} mm<br/>
+                      Motorisation: {data.motor_type}<br/>
+                      {data.motor_type === 'électrique' && (
+                        <>Accessoires: {data.remote_count} télécommande(s){data.photocells ? ', Photocellules' : ''}<br/></>
+                      )}
                     </td>
-                    <td>{data.quantite || 1}</td>
-                    <td>{Math.round(donneesTechGarage.prixUnitaire || 1500)},00</td>
-                    <td>{Math.round((donneesTechGarage.prixUnitaire || 1500) * (data.quantite || 1))},00</td>
-                    <td>{Math.round((donneesTechGarage.prixUnitaire || 1500) * (data.quantite || 1) * 1.2)},00</td>
-                    <td>20,00</td>
+                    <td>{line1Qty || 0}</td>
+                    <td>{fmt(line1PU)}</td>
+                    <td>{fmt(line1HT)}</td>
+                    <td>{fmt(line1HT * (1 + tvaRate))}</td>
+                    <td>{fmt(line1HT * tvaRate)}</td>
                   </tr>
+                  {data.motor_type === 'électrique' && (
+                    <tr>
+                      <td>MOTEUR-ELEC</td>
+                      <td>
+                        <strong>MOTORISATION ÉLECTRIQUE</strong><br/>
+                        {data.remote_count} télécommande(s)<br/>
+                        {data.photocells && 'Photocellules de sécurité'}
+                      </td>
+                      <td>1</td>
+                      <td>{fmt(line2PU)}</td>
+                      <td>{fmt(line2HT)}</td>
+                      <td>{fmt(line2HT * (1 + tvaRate))}</td>
+                      <td>{fmt(line2HT * tvaRate)}</td>
+                    </tr>
+                  )}
                   {data.inclure_pose === 'Oui' && (
                     <tr>
                       <td>POSE</td>
@@ -525,15 +773,53 @@ export default function PdfViewer({ page, variables }) {
                         {data.depose_ancienne === 'Oui' && 'Dépose ancienne porte incluse'}<br/>
                         {data.evacuation_dechets && 'Évacuation déchets incluse'}
                       </td>
-                      <td>1,00</td>
-                      <td>350,00</td>
-                      <td>350,00</td>
-                      <td>420,00</td>
-                      <td>20,00</td>
+                      <td>1</td>
+                      <td>{fmt(poseHT)}</td>
+                      <td>{fmt(poseHT)}</td>
+                      <td>{fmt(poseHT * (1 + tvaRate))}</td>
+                      <td>{fmt(poseHT * tvaRate)}</td>
                     </tr>
                   )}
                 </tbody>
               </table>
+            </div>
+
+            {/* Spécifications techniques */}
+            <div className="technical-specs">
+              <h3>Spécifications Techniques</h3>
+              <div className="specs-grid">
+                <div className="spec-section">
+                  <h4>Modèle et Finition</h4>
+                  <ul>
+                    <li>Modèle: {(data.technical_specs?.model || '').toUpperCase()}</li>
+                    <li>Finition: {data.technical_specs?.finish || ''}</li>
+                  </ul>
+                </div>
+                <div className="spec-section">
+                  <h4>Dimensions</h4>
+                  <ul>
+                    <li>Largeur: {data.technical_specs?.dimensions?.width || 0} mm</li>
+                    <li>Hauteur: {data.technical_specs?.dimensions?.height || 0} mm</li>
+                    <li>Hauteur linteau: {data.technical_specs?.dimensions?.lintel_height || 0} mm</li>
+                  </ul>
+                </div>
+                <div className="spec-section">
+                  <h4>Motorisation</h4>
+                  <ul>
+                    <li>Type: {data.technical_specs?.motorization?.type === 'electrique' ? 'Électrique' : 'Manuelle'}</li>
+                    {data.technical_specs?.motorization?.accessories?.map(acc => (
+                      <li key={acc}>{acc}</li>
+                    ))}
+                  </ul>
+                </div>
+                <div className="spec-section">
+                  <h4>Installation</h4>
+                  <ul>
+                    <li>Type de pose: {data.installation_type || 'Non spécifié'}</li>
+                    <li>Dépose ancienne porte: {data.old_door_removal ? 'Oui' : 'Non'}</li>
+                  </ul>
+                </div>
+              </div>
             </div>
 
             {/* Note et conditions */}
@@ -552,27 +838,27 @@ export default function PdfViewer({ page, variables }) {
                   <span>Montant TVA</span>
                 </div>
                 <div className="total-row">
-                  <span>20,00</span>
-                  <span>{Math.round((donneesTechGarage.prixUnitaire || 1500) * (data.quantite || 1) + (data.inclure_pose === 'Oui' ? 350 : 0))},00</span>
-                  <span>{Math.round(((donneesTechGarage.prixUnitaire || 1500) * (data.quantite || 1) + (data.inclure_pose === 'Oui' ? 350 : 0)) * 0.2)},00</span>
+                  <span>{new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format((data.tva_rate ?? 20))}</span>
+                  <span>{fmt(baseHT)}</span>
+                  <span>{fmt(tvaAmt)}</span>
                 </div>
               </div>
               <div className="final-totals">
                 <div className="total-line">
                   <span>Total HT</span>
-                  <span>{Math.round((donneesTechGarage.prixUnitaire || 1500) * (data.quantite || 1) + (data.inclure_pose === 'Oui' ? 350 : 0))},00</span>
+                  <span>{fmt(baseHT)}</span>
                 </div>
                 <div className="total-line">
                   <span>Total TVA</span>
-                  <span>{Math.round(((donneesTechGarage.prixUnitaire || 1500) * (data.quantite || 1) + (data.inclure_pose === 'Oui' ? 350 : 0)) * 0.2)},00</span>
+                  <span>{fmt(tvaAmt)}</span>
                 </div>
                 <div className="total-line">
                   <span>Total TTC</span>
-                  <span>{Math.round(((donneesTechGarage.prixUnitaire || 1500) * (data.quantite || 1) + (data.inclure_pose === 'Oui' ? 350 : 0)) * 1.2)},00</span>
+                  <span>{fmt(totalTTC)}</span>
                 </div>
                 <div className="total-line final">
                   <span><strong>Net à payer</strong></span>
-                  <span><strong>{Math.round(((donneesTechGarage.prixUnitaire || 1500) * (data.quantite || 1) + (data.inclure_pose === 'Oui' ? 350 : 0)) * 1.2)},00 €</strong></span>
+                  <span><strong>{fmt(totalTTC)} €</strong></span>
                 </div>
               </div>
             </div>
