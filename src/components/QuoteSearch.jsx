@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../styles/quotesearch.css';
 
 const downloadCSV = (data) => {
@@ -7,13 +7,13 @@ const downloadCSV = (data) => {
     headers.join(','),
     ...data.map(quote => [
       quote.id,
-      new Date(quote.date).toLocaleDateString('fr-FR'),
-      quote.type,
-      quote.client,
-      quote.adresse,
-      quote.produit,
-      `${quote.montantTTC.toFixed(2)} €`,
-      quote.statut
+      new Date(quote.created_at).toLocaleDateString('fr-FR'),
+      'Garage',
+      quote.client_name,
+      quote.client_address,
+      quote.model,
+      `${quote.total_ttc.toFixed(2)} €`,
+      quote.status
     ].join(','))
   ].join('\n');
 
@@ -39,20 +39,60 @@ export default function QuoteSearch() {
 
   const [sortBy, setSortBy] = useState('date');
 
+  const handleViewPdf = async (invoiceId) => {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/quotes/garage/${invoiceId}/pdf`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      if (data.success && data.data.pdf_url) {
+        window.open(data.data.pdf_url, '_blank');
+      } else {
+        console.error('URL du PDF non trouvée ou réponse invalide:', data);
+      }
+    } catch (error) {
+      console.error('Erreur lors de la récupération du PDF:', error);
+    }
+  };
+
   // Exemple de devis fictif
   const fakeQuotes = [
     {
       id: 'DE600689',
-      date: '2025-08-15',
+      created_at: '2025-08-15',
       type: 'garage',
-      client: 'Martin DUPONT',
-      adresse: '15 rue des Lilas, 63000 Clermont-Ferrand',
-      produit: 'Porte de garage LIMA',
-      montantHT: 659.99,
-      montantTTC: 791.99,
-      statut: 'validé'
+      client_name: 'Martin DUPONT',
+      client_address: '15 rue des Lilas, 63000 Clermont-Ferrand',
+      model: 'Porte de garage LIMA',
+      total_ttc: 791.99,
+      status: 'validé'
     }
   ];
+
+  const [quotes, setQuotes] = useState([]);
+
+  useEffect(() => {
+    const fetchQuotes = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/quotes/garage`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        if (data.success && Array.isArray(data.data)) {
+          setQuotes(data.data);
+        } else {
+          console.error('API response is not in expected format:', data);
+          setQuotes([]); // Set to empty array on failure
+        }
+      } catch (error) {
+        console.error('Erreur lors de la récupération des devis:', error);
+        setQuotes([]); // Set to empty array on error
+      }
+    };
+    fetchQuotes();
+  }, []);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -118,7 +158,7 @@ export default function QuoteSearch() {
 
         <button 
           className="export-btn" 
-          onClick={() => downloadCSV(fakeQuotes)}
+          onClick={() => downloadCSV(quotes)}
         >
           Exporter en CSV
         </button>
@@ -148,22 +188,22 @@ export default function QuoteSearch() {
             </tr>
           </thead>
           <tbody>
-            {fakeQuotes.map(quote => (
+            {quotes && quotes.map(quote => (
               <tr key={quote.id}>
                 <td>{quote.id}</td>
-                <td>{new Date(quote.date).toLocaleDateString('fr-FR')}</td>
-                <td>{quote.type}</td>
-                <td>{quote.client}</td>
-                <td>{quote.adresse}</td>
-                <td>{quote.produit}</td>
-                <td>{quote.montantTTC.toFixed(2)} €</td>
+                <td>{new Date(quote.created_at).toLocaleDateString('fr-FR')}</td>
+                <td>Garage</td>
+                <td>{quote.client_name}</td>
+                <td>{quote.client_address}</td>
+                <td>{quote.model}</td>
+                <td>{quote.total_ttc.toFixed(2)} €</td>
                 <td>
-                  <span className={`status ${quote.statut}`}>
-                    {quote.statut}
+                  <span className={`status ${quote.status}`}>
+                    {quote.status}
                   </span>
                 </td>
                 <td>
-                  <button className="btn-view">Voir</button>
+                  <button className="btn-view" onClick={() => handleViewPdf(quote.id)}>Voir</button>
                   <button className="btn-edit">Modifier</button>
                 </td>
               </tr>
