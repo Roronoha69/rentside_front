@@ -41,7 +41,11 @@ export default function QuoteSearch() {
 
   const handleViewPdf = async (invoiceId) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/quotes/garage/${invoiceId}/pdf`);
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/quotes/garage/${invoiceId}/pdf`, {
+        headers: {
+          'x-api-key': import.meta.env.VITE_API_KEY
+        }
+      });
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -72,7 +76,11 @@ export default function QuoteSearch() {
         // The 'type' filter is handled here for now, assuming you might have different routes later
         const quoteType = filters.type === 'tous' ? 'garage' : filters.type;
         
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/quotes/${quoteType}?${params.toString()}`);
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/quotes/${quoteType}?${params.toString()}`, {
+          headers: {
+            'x-api-key': import.meta.env.VITE_API_KEY
+          }
+        });
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

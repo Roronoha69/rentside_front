@@ -86,6 +86,7 @@ const garageQuestions = [
   // Spécifications techniques
   { label: 'Modèle', name: 'technical_specs.model', type: 'select', options: ['ankara', 'castries', 'lima', 'riga'], required: true },
   { label: 'Finition', name: 'technical_specs.finish', type: 'select', options: ['ral_7016_dark', 'wood_flat', 'ral_9010_blanc'], required: true },
+  { label: 'Système de ressort', name: 'technical_specs.spring_system', type: 'select', options: ['front', 'side'], required: true },
   
   // Dimensions
   { label: 'Largeur (mm)', name: 'technical_specs.dimensions.width', type: 'number', placeholder: 'ex: 2400', required: true },
@@ -185,6 +186,7 @@ const defaultValues = {
     technical_specs: {
       model: 'lima',
       finish: 'ral_9010_blanc',
+      spring_system: 'front',
       dimensions: {
         width: 2400,
         height: 2000,
@@ -360,4 +362,3 @@ export default function RightPanel({ page, onVariablesChange }) {
     </aside>
   );
 }
-
