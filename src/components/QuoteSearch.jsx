@@ -34,7 +34,8 @@ export default function QuoteSearch() {
     dateFin: '',
     client: '',
     montantMin: '',
-    montantMax: ''
+    montantMax: '',
+    invoice_number: ''
   });
 
   const [sortBy, setSortBy] = useState('date');
@@ -67,6 +68,7 @@ export default function QuoteSearch() {
       try {
         const params = new URLSearchParams();
         // We only add filters to the query if they have a value
+        if (filters.invoice_number) params.append('invoice_number', filters.invoice_number);
         if (filters.client) params.append('client', filters.client);
         if (filters.dateDebut) params.append('dateDebut', filters.dateDebut);
         if (filters.dateFin) params.append('dateFin', filters.dateFin);
@@ -108,6 +110,18 @@ export default function QuoteSearch() {
     }));
   };
 
+  const handleResetFilters = () => {
+    setFilters({
+      type: 'tous',
+      dateDebut: '',
+      dateFin: '',
+      client: '',
+      montantMin: '',
+      montantMax: '',
+      invoice_number: ''
+    });
+  };
+
   return (
     <div className="quote-search">
       <div className="search-header">
@@ -118,6 +132,14 @@ export default function QuoteSearch() {
             <option value="fenetre">Fenêtres</option>
             <option value="sol">Sols</option>
           </select>
+
+          <input 
+            type="text"
+            name="invoice_number"
+            value={filters.invoice_number}
+            placeholder="N° de devis"
+            onChange={handleFilterChange}
+          />
 
           <input 
             type="text"
@@ -161,7 +183,7 @@ export default function QuoteSearch() {
             />
           </div>
         </div>
-
+        <button className="reset-btn" onClick={handleResetFilters}>Réinitialiser</button>
         <button 
           className="export-btn" 
           onClick={() => downloadCSV(quotes)}
