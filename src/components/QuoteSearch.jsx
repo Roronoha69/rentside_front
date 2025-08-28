@@ -56,26 +56,24 @@ export default function QuoteSearch() {
     }
   };
 
-  // Exemple de devis fictif
-  const fakeQuotes = [
-    {
-      id: 'DE600689',
-      created_at: '2025-08-15',
-      type: 'garage',
-      client_name: 'Martin DUPONT',
-      client_address: '15 rue des Lilas, 63000 Clermont-Ferrand',
-      model: 'Porte de garage LIMA',
-      total_ttc: 791.99,
-      status: 'validé'
-    }
-  ];
-
   const [quotes, setQuotes] = useState([]);
 
   useEffect(() => {
     const fetchQuotes = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/quotes/garage`);
+        const params = new URLSearchParams();
+        // We only add filters to the query if they have a value
+        if (filters.client) params.append('client', filters.client);
+        if (filters.dateDebut) params.append('dateDebut', filters.dateDebut);
+        if (filters.dateFin) params.append('dateFin', filters.dateFin);
+        if (filters.montantMin) params.append('montantMin', filters.montantMin);
+        if (filters.montantMax) params.append('montantMax', filters.montantMax);
+
+        // The 'type' filter is handled here for now, assuming you might have different routes later
+        const quoteType = filters.type === 'tous' ? 'garage' : filters.type;
+        
+        const response = await fetch(`${import.meta.env.VITE_API_URL}/api/quotes/${quoteType}?${params.toString()}`);
+        
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -92,7 +90,7 @@ export default function QuoteSearch() {
       }
     };
     fetchQuotes();
-  }, []);
+  }, [filters]);
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
