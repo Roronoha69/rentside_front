@@ -125,71 +125,92 @@ export default function QuoteSearch() {
   return (
     <div className="quote-search">
       <div className="search-header">
-        <div className="search-filters">
-          <select name="type" value={filters.type} onChange={handleFilterChange}>
-            <option value="tous">Tous</option>
-            <option value="garage">Portes de garage</option>
-            <option value="fenetre">Fenêtres</option>
-            <option value="sol">Sols</option>
-          </select>
+        <form className="filters-form">
+          <div className="filter-item">
+            <label htmlFor="type">Type de devis</label>
+            <select id="type" name="type" value={filters.type} onChange={handleFilterChange}>
+              <option value="tous">Tous</option>
+              <option value="garage">Portes de garage</option>
+              <option value="fenetre">Fenêtres</option>
+              <option value="sol">Sols</option>
+            </select>
+          </div>
 
-          <input 
-            type="text"
-            name="invoice_number"
-            value={filters.invoice_number}
-            placeholder="N° de devis"
-            onChange={handleFilterChange}
-          />
-
-          <input 
-            type="text"
-            name="client"
-            value={filters.client}
-            placeholder="Nom du client"
-            onChange={handleFilterChange}
-          />
-
-          <div className="date-range">
+          <div className="filter-item">
+            <label htmlFor="invoice_number">N° de devis</label>
             <input 
-              type="date" 
-              name="dateDebut"
-              value={filters.dateDebut}
-              onChange={handleFilterChange}
-            />
-            <span>à</span>
-            <input 
-              type="date" 
-              name="dateFin"
-              value={filters.dateFin}
+              id="invoice_number"
+              type="text"
+              name="invoice_number"
+              value={filters.invoice_number}
+              placeholder="Ex : DE123456"
               onChange={handleFilterChange}
             />
           </div>
 
-          <div className="amount-range">
-            <input
-              type="number"
-              name="montantMin"
-              value={filters.montantMin}
-              placeholder="Min €"
-              onChange={handleFilterChange}
-            />
-            <span>à</span>
-            <input
-              type="number"
-              name="montantMax"
-              value={filters.montantMax}
-              placeholder="Max €"
+          <div className="filter-item">
+            <label htmlFor="client">Nom du client</label>
+            <input 
+              id="client"
+              type="text"
+              name="client"
+              value={filters.client}
+              placeholder="Ex : Martin"
               onChange={handleFilterChange}
             />
           </div>
-        </div>
-        <button className="reset-btn" onClick={handleResetFilters}>Réinitialiser</button>
-        <button 
-          className="export-btn" 
-          onClick={() => downloadCSV(quotes)}
-        >
-          Exporter en CSV
-        </button>
+
+          <div className="filter-item filter-item-range">
+            <label>Période</label>
+            <div className="input-range">
+              <input 
+                type="date" 
+                name="dateDebut"
+                value={filters.dateDebut}
+                onChange={handleFilterChange}
+                aria-label="Date de début"
+              />
+              <span>à</span>
+              <input 
+                type="date" 
+                name="dateFin"
+                value={filters.dateFin}
+                onChange={handleFilterChange}
+                aria-label="Date de fin"
+              />
+            </div>
+          </div>
+
+          <div className="filter-item filter-item-range">
+            <label>Montant TTC</label>
+            <div className="input-range">
+              <input
+                type="number"
+                name="montantMin"
+                value={filters.montantMin}
+                placeholder="Min €"
+                onChange={handleFilterChange}
+                aria-label="Montant minimum"
+              />
+              <span>à</span>
+              <input
+                type="number"
+                name="montantMax"
+                value={filters.montantMax}
+                placeholder="Max €"
+                onChange={handleFilterChange}
+                aria-label="Montant maximum"
+              />
+            </div>
+          </div>
+
+          <div className="filter-actions">
+            <button className="reset-btn" type="button" onClick={handleResetFilters}>Réinitialiser</button>
+            <button className="export-btn" type="button" onClick={() => downloadCSV(quotes)}>
+              Exporter en CSV
+            </button>
+          </div>
+        </form>
       </div>
 
       {/* Tableau des résultats */}
