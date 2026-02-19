@@ -27,9 +27,9 @@ export default function App() {
       <ToastContainer position="top-right" autoClose={3000} />
       <Routes>
         <Route path="/" element={<Navigate to="/recherche" replace />} />
-        <Route path="/devis-fenetre" element={<Layout page="fenetre" />} />
-        <Route path="/devis-sol" element={<Layout page="sol" />} />
-        <Route path="/devis-garage" element={<Layout page="garage" />} />
+        {/* <Route path="/devis-fenetre" element={<Layout page="fenetre" />} /> */}
+        {/* <Route path="/devis-sol" element={<Layout page="sol" />} /> */}
+        {/* <Route path="/devis-garage" element={<Layout page="garage" />} /> */}
         <Route path="/recherche" element={<SearchPage />} />
       </Routes>
     </Router>

@@ -881,7 +881,7 @@ export default function PdfViewer({ page, variables }) {
         )}
         {page === 'sol' && (
           <div className="devis-html sol">
-            <h2>Devis Sol (à venir)</h2>
+            {/* <h2>Devis Sol (à venir)</h2> */}
           </div>
         )}
       </div>

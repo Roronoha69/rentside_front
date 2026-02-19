@@ -15,12 +15,12 @@ export default function Sidebar() {
           <NavLink to="/recherche" activeclassname="active">Rechercher un devis</NavLink>
         </div>
 
-        <div className="nav-section">
+        {/* <div className="nav-section">
           <h3>Créer un devis</h3>
-          {/* <NavLink to="/devis-fenetre" activeclassname="active">Fenêtres & Portes</NavLink> */}
+          <NavLink to="/devis-fenetre" activeclassname="active">Fenêtres & Portes</NavLink>
           <NavLink to="/devis-garage" activeclassname="active">Portes de garage</NavLink>
           <NavLink to="/devis-sol" activeclassname="active">Sols</NavLink>
-        </div>
+        </div> */}
         
       </nav>
     </aside>
