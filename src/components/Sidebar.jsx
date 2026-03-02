@@ -13,6 +13,7 @@ export default function Sidebar() {
         <div className="nav-section">
           <h3>Gestion</h3>
           <NavLink to="/recherche" activeclassname="active">Rechercher un devis</NavLink>
+          <NavLink to="/window-pricing-documents" activeclassname="active">Window Pricing Documents</NavLink>
         </div>
 
         {/* <div className="nav-section">

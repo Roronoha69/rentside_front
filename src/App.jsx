@@ -6,6 +6,7 @@ import Sidebar from './components/Sidebar';
 import PdfViewer from './components/PdfViewer';
 import RightPanel from './components/RightPanel';
 import SearchPage from './components/SearchPage';
+import WindowPricingDocumentsPage from './components/WindowPricingDocumentsPage';
 import './styles/app.css';
 
 function Layout({ page }) {
@@ -31,6 +32,7 @@ export default function App() {
         {/* <Route path="/devis-sol" element={<Layout page="sol" />} /> */}
         {/* <Route path="/devis-garage" element={<Layout page="garage" />} /> */}
         <Route path="/recherche" element={<SearchPage />} />
+        <Route path="/window-pricing-documents" element={<WindowPricingDocumentsPage />} />
       </Routes>
     </Router>
   );

@@ -81,6 +81,11 @@ const defaultGarage = {
 export default function PdfViewer({ page, variables }) {
   const [isSaving, setIsSaving] = useState(false);
 
+  const bankName = import.meta.env.VITE_COMPANY_BANK_NAME || '';
+  const rib = import.meta.env.VITE_COMPANY_RIB || '';
+  const iban = import.meta.env.VITE_COMPANY_IBAN || '';
+  const bic = import.meta.env.VITE_COMPANY_BIC || '';
+
   const handleSavePDF = async () => {
     if (page !== 'garage') return;
     
@@ -348,10 +353,10 @@ export default function PdfViewer({ page, variables }) {
             {/* Coordonnées bancaires */}
             <div className="bank-info">
               <strong>Coordonnées bancaires société :</strong><br/>
-              Banque : CREDIT AGRICOLE<br/>
-              RIB : 16806000156411982677926<br/>
-              IBAN : FR7616806000156411982677926<br/>
-              BIC : AGRIFRPP868
+              Banque : {bankName || '—'}<br/>
+              RIB : {rib || '—'}<br/>
+              IBAN : {iban || '—'}<br/>
+              BIC : {bic || '—'}
             </div>
 
             {/* Mentions légales */}
@@ -866,10 +871,10 @@ export default function PdfViewer({ page, variables }) {
             {/* Coordonnées bancaires */}
             <div className="bank-details">
               <strong>Coordonnées bancaires société :</strong><br/>
-              Banque : CREDIT AGRICOLE<br/>
+              Banque : {bankName || '—'}<br/>
               Code banque : 16807 - Code guichet : 00036<br/>
-              IBAN : FR761680700010066119C207S306<br/>
-              BIC : AGRIFRPP868
+              IBAN : {iban || '—'}<br/>
+              BIC : {bic || '—'}
             </div>
 
             {/* Pied de page */}
