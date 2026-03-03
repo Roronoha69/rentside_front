@@ -6,6 +6,7 @@ import {
   listWindowPricingDocuments,
   importWindowPricingDocument,
   activateWindowPricingDocument,
+  deactivateWindowPricingDocument,
 } from '../services/api';
 import ImportReportModal from './ImportReportModal';
 import '../styles/windowPricingDocuments.css';
@@ -34,6 +35,7 @@ export default function WindowPricingDocumentsPage() {
   const [docs, setDocs] = React.useState([]);
   const [importingId, setImportingId] = React.useState(null);
   const [activatingId, setActivatingId] = React.useState(null);
+  const [deactivatingId, setDeactivatingId] = React.useState(null);
   const [reportOpen, setReportOpen] = React.useState(false);
   const [report, setReport] = React.useState(null);
 
@@ -106,6 +108,19 @@ export default function WindowPricingDocumentsPage() {
     }
   }
 
+  async function onDeactivate(id) {
+    setDeactivatingId(id);
+    try {
+      await deactivateWindowPricingDocument(id);
+      toast.success('Deactivated');
+      await refresh();
+    } catch (e) {
+      toast.error(e?.response?.data?.message || 'Deactivation failed');
+    } finally {
+      setDeactivatingId(null);
+    }
+  }
+
   return (
     <div className="search-page-layout">
       <Sidebar />
@@ -166,7 +181,7 @@ export default function WindowPricingDocumentsPage() {
                     <td>
                       <div className="wpd-filename">
                         <span>{d.filename || d.id}</span>
-                        {String(d.status).toLowerCase() === 'active' && <span className="wpd-active-badge">ACTIVE</span>}
+                        {Boolean(d.is_active) && <span className="wpd-active-badge">ACTIVE</span>}
                       </div>
                     </td>
                     <td>{formatDate(d.uploaded_at)}</td>
@@ -177,17 +192,27 @@ export default function WindowPricingDocumentsPage() {
                         <button
                           className="wpd-button"
                           onClick={() => onImport(d.id)}
-                          disabled={importingId === d.id || uploading || activatingId != null}
+                          disabled={importingId === d.id || uploading || activatingId != null || deactivatingId != null}
                         >
                           {importingId === d.id ? 'Importing…' : 'Import'}
                         </button>
-                        <button
-                          className="wpd-button wpd-button-primary"
-                          onClick={() => onActivate(d.id)}
-                          disabled={activatingId === d.id || uploading || importingId != null}
-                        >
-                          {activatingId === d.id ? 'Activating…' : 'Activate'}
-                        </button>
+                        {Boolean(d.is_active) ? (
+                          <button
+                            className="wpd-button wpd-button-secondary"
+                            onClick={() => onDeactivate(d.id)}
+                            disabled={deactivatingId === d.id || uploading || importingId != null || activatingId != null}
+                          >
+                            {deactivatingId === d.id ? 'Deactivating…' : 'Deactivate'}
+                          </button>
+                        ) : (
+                          <button
+                            className="wpd-button wpd-button-primary"
+                            onClick={() => onActivate(d.id)}
+                            disabled={activatingId === d.id || uploading || importingId != null || deactivatingId != null}
+                          >
+                            {activatingId === d.id ? 'Activating…' : 'Activate'}
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -206,4 +231,3 @@ export default function WindowPricingDocumentsPage() {
     </div>
   );
 }
-

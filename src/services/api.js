@@ -1,13 +1,18 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+// In this project, VITE_API_URL is typically the server origin (ex: http://localhost:5002).
+// Normalize to always point axios to the backend "/api" root.
+const RAW_API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5002';
+const API_URL = RAW_API_URL.endsWith('/api')
+  ? RAW_API_URL
+  : `${RAW_API_URL.replace(/\/$/, '')}/api`;
 const API_KEY = import.meta.env.VITE_API_KEY;
 
 const api = axios.create({
   baseURL: API_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  // Do not force Content-Type globally:
+  // - axios will set application/json automatically for JSON payloads
+  // - forcing it breaks multipart/form-data uploads (missing boundary)
 });
 
 function withAdminKey(extraHeaders = {}) {
@@ -65,5 +70,10 @@ export async function importWindowPricingDocument(id) {
 
 export async function activateWindowPricingDocument(id) {
   const res = await api.post(`/admin/window-documents/${id}/activate`, null, { headers: withAdminKey() });
+  return res.data;
+}
+
+export async function deactivateWindowPricingDocument(id) {
+  const res = await api.post(`/admin/window-documents/${id}/deactivate`, null, { headers: withAdminKey() });
   return res.data;
 }
