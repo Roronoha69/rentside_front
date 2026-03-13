@@ -65,10 +65,13 @@ export default function WindowPricingDocumentsPage() {
     }
     setUploading(true);
     try {
+      console.debug('[WindowPricingDocuments] upload start', { name: file.name, type: file.type, size: file.size });
       await uploadWindowPricingDocument(file);
+      console.debug('[WindowPricingDocuments] upload done');
       toast.success('Uploaded');
       await refresh();
     } catch (e) {
+      console.debug('[WindowPricingDocuments] upload error', e?.response?.data || e);
       toast.error(e?.response?.data?.message || 'Upload failed');
     } finally {
       setUploading(false);
@@ -78,14 +81,17 @@ export default function WindowPricingDocumentsPage() {
   async function onImport(id) {
     setImportingId(id);
     try {
+      console.debug('[WindowPricingDocuments] import start', { id });
       const res = await importWindowPricingDocument(id);
       const rep = res?.import_report || res?.data?.import_report || null;
+      console.debug('[WindowPricingDocuments] import response', res);
       setReport(rep);
       setReportOpen(true);
       toast.success('Import finished');
       await refresh();
     } catch (e) {
       const rep = e?.response?.data?.import_report || null;
+      console.debug('[WindowPricingDocuments] import error', e?.response?.data || e);
       setReport(rep);
       setReportOpen(true);
       toast.error(e?.response?.data?.message || 'Import failed');
@@ -98,10 +104,13 @@ export default function WindowPricingDocumentsPage() {
   async function onActivate(id) {
     setActivatingId(id);
     try {
+      console.debug('[WindowPricingDocuments] activate start', { id });
       await activateWindowPricingDocument(id);
+      console.debug('[WindowPricingDocuments] activate done', { id });
       toast.success('Activated');
       await refresh();
     } catch (e) {
+      console.debug('[WindowPricingDocuments] activate error', e?.response?.data || e);
       toast.error(e?.response?.data?.message || 'Activation failed');
     } finally {
       setActivatingId(null);
@@ -111,10 +120,13 @@ export default function WindowPricingDocumentsPage() {
   async function onDeactivate(id) {
     setDeactivatingId(id);
     try {
+      console.debug('[WindowPricingDocuments] deactivate start', { id });
       await deactivateWindowPricingDocument(id);
+      console.debug('[WindowPricingDocuments] deactivate done', { id });
       toast.success('Deactivated');
       await refresh();
     } catch (e) {
+      console.debug('[WindowPricingDocuments] deactivate error', e?.response?.data || e);
       toast.error(e?.response?.data?.message || 'Deactivation failed');
     } finally {
       setDeactivatingId(null);

@@ -81,10 +81,10 @@ const defaultGarage = {
 export default function PdfViewer({ page, variables }) {
   const [isSaving, setIsSaving] = useState(false);
 
-  const bankName = import.meta.env.VITE_COMPANY_BANK_NAME || '';
-  const rib = import.meta.env.VITE_COMPANY_RIB || '';
-  const iban = import.meta.env.VITE_COMPANY_IBAN || '';
-  const bic = import.meta.env.VITE_COMPANY_BIC || '';
+  const bankName = import.meta.env.VITE_COMPANY_BANK_NAME || 'Exemple banque';
+  const rib = import.meta.env.VITE_COMPANY_RIB || '0729 8292 9293 7373 6373 838';
+  const iban = import.meta.env.VITE_COMPANY_IBAN || '0729 8292 9293 7373 6373 838';
+  const bic = import.meta.env.VITE_COMPANY_BIC || 'TEST12345';
 
   const handleSavePDF = async () => {
     if (page !== 'garage') return;
